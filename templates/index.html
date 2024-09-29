@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Churn Prediction</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 50%; margin: 50px auto; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 8px; }
+        button { padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .result { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Customer Churn Prediction</h2>
+        <form id="churnForm">
+            <div class="form-group">
+                <label for="tenure">Tenure</label>
+                <input type="number" id="tenure" name="tenure" required>
+            </div>
+            <div class="form-group">
+                <label for="MonthlyCharges">Monthly Charges</label>
+                <input type="number" id="MonthlyCharges" name="MonthlyCharges" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="TotalCharges">Total Charges</label>
+                <input type="number" id="TotalCharges" name="TotalCharges" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender" required>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="InternetService">Internet Service</label>
+                <select id="InternetService" name="InternetService" required>
+                    <option value="DSL">DSL</option>
+                    <option value="Fiber optic">Fiber optic</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Contract">Contract</label>
+                <select id="Contract" name="Contract" required>
+                    <option value="Month-to-month">Month-to-month</option>
+                    <option value="One year">One year</option>
+                    <option value="Two year">Two year</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="PaymentMethod">Payment Method</label>
+                <select id="PaymentMethod" name="PaymentMethod" required>
+                    <option value="Electronic check">Electronic check</option>
+                    <option value="Mailed check">Mailed check</option>
+                    <option value="Bank transfer">Bank transfer</option>
+                    <option value="Credit card">Credit card</option>
+                </select>
+            </div>
+            <button type="submit">Predict Churn</button>
+        </form>
+        <div class="result" id="result"></div>
+    </div>
+    <script>
+        document.getElementById('churnForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = {
+                tenure: document.getElementById('tenure').value,
+                MonthlyCharges: document.getElementById('MonthlyCharges').value,
+                TotalCharges: document.getElementById('TotalCharges').value,
+                gender: document.getElementById('gender').value,
+                InternetService: document.getElementById('InternetService').value,
+                Contract: document.getElementById('Contract').value,
+                PaymentMethod: document.getElementById('PaymentMethod').value
+            };
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML = 
+                    `Prediction: ${data.prediction === 1 ? 'Customer will churn' : 'Customer will not churn'}`;
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = 'Error making prediction.';
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
